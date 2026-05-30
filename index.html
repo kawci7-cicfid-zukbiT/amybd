@@ -8,33 +8,366 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --ice:#cdeeff;
-    --ice-deep:#7ec8e3;
-    --frost:#eaf7ff;
-    --glow:#a8e0ff;
-    --night1:#0a1e3f;
-    --night2:#13315c;
-    --aurora1:#4fe0b0;
-    --aurora2:#6a8cff;
-    --aurora3:#b06ad6;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  html,body{height:100%;background:#06112a;font-family:'Quicksand',sans-serif;}
-  body{overflow:hidden;}
-
-  #app{position:relative;width:100vw;height:100vh;overflow:hidden;
-    background:radial-gradient(1300px 900px at 50% 25%,var(--night2),var(--night1) 55%,#06112a 100%);}
-
-  /* aurora */
-  .aurora{position:absolute;top:-10%;left:-20%;width:140%;height:60%;z-index:0;filter:blur(50px);opacity:.45;pointer-events:none;
-    background:
-      radial-gradient(40% 60% at 25% 40%,var(--aurora1),transparent 70%),
-      radial-gradient(45% 55% at 55% 30%,var(--aurora2),transparent 70%),
-      radial-gradient(40% 60% at 78% 45%,var(--aurora3),transparent 70%);
-    animation:aur 14s ease-in-out infinite alternate;}
-  @keyframes aur{0%{transform:translateX(-3%) scaleY(1);opacity:.4;}100%{transform:translateX(4%) scaleY(1.15);opacity:.6;}}
-
+:root{
+--ice:#cdeeff;
+--ice-deep:#7ec8e3;
+--frost:#eaf7ff;
+--glow:#a8e0ff;
+--night1:#0a1e3f;
+--night2:#13315c;
+--aurora1:#4fe0b0;
+--aurora2:#6a8cff;
+--aurora3:#b06ad6;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;background:#06112a;font-family:'Quicksand',sans-serif;}
+body{overflow:hidden;}
+#app{position:relative;width:100vw;height:100vh;overflow:hidden;
+background:radial-gradient(1300px 900px at 50% 25%,var(--night2),var(--night1) 55%,#06112a 100%);}
+/* aurora */
+.aurora{position:absolute;top:-10%;left:-20%;width:140%;height:60%;z-index:0;filter:blur(50px);opacity:.45;pointer-events:none;
+background:
+radial-gradient(40% 60% at 25% 40%,var(--aurora1),transparent 70%),
+radial-gradient(45% 55% at 55% 30%,var(--aurora2),transparent 70%),
+radial-gradient(40% 60% at 78% 45%,var(--aurora3),transparent 70%);
+animation:aur 14s ease-in-out infinite alternate;}
+@keyframes aur{0%{transform:translateX(-3%) scaleY(1);opacity:.4;}100%{transform:translateX(4%) scaleY(1.15);opacity:.6;}}
+.stars{position:absolute;inset:0;z-index:0;}
+.star{position:absolute;background:#fff;border-radius:50%;animation:tw 3.5s ease-in-out infinite;}
+@keyframes tw{0%,100%{opacity:.15;transform:scale(.7);}50%{opacity:1;transform:scale(1.25);}}
+/* frost corners */
+.frostc{position:absolute;width:230px;height:230px;z-index:1;opacity:.5;pointer-events:none;
+background:radial-gradient(circle at 0 0,rgba(205,238,255,.6),transparent 60%);}
+.frostc.tl{top:0;left:0;}
+.frostc.tr{top:0;right:0;transform:scaleX(-1);}
+.frostc.bl{bottom:0;left:0;transform:scaleY(-1);}
+.frostc.br{bottom:0;right:0;transform:scale(-1);}
+#snow{position:absolute;inset:0;z-index:2;pointer-events:none;}
+/* INTRO */
+#intro{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;
+gap:24px;padding:24px;text-align:center;transition:opacity .8s;}
+.flake-big{font-size:3.2rem;color:#fff;filter:drop-shadow(0 0 22px var(--glow));animation:spin 16s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#intro h1{
+font-family:'Cinzel Decorative',serif;font-weight:900;font-size:clamp(2.1rem,7vw,4.2rem);letter-spacing:2px;
+background:linear-gradient(180deg,#ffffff,var(--ice) 50%,var(--ice-deep));
+-webkit-background-clip:text;background-clip:text;color:transparent;
+text-shadow:0 0 40px rgba(168,224,255,.4);}
+#intro .sub{color:#cfe8ff;font-size:1.05rem;opacity:.85;max-width:420px;}
+.btn{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:1.15rem;color:#0a2440;letter-spacing:1px;
+background:linear-gradient(180deg,#ffffff,var(--ice) 60%,var(--ice-deep));border:none;padding:15px 44px;border-radius:999px;cursor:pointer;
+box-shadow:0 8px 34px rgba(126,200,227,.5),inset 0 1px 0 #fff;transition:transform .15s,box-shadow .15s;}
+.btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 12px 44px rgba(168,224,255,.7),inset 0 1px 0 #fff;}
+.btn:active{transform:translateY(0) scale(.99);}
+/* MOVIE */
+#movie{position:absolute;inset:0;z-index:10;opacity:0;pointer-events:none;transition:opacity 0.5s;}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+gap:26px;padding:6vh 6vw;text-align:center;opacity:0;transform:scale(1.07);transition:opacity 1.1s,transform 1.3s;}
+.scene.active{opacity:1;transform:scale(1);pointer-events:auto;}
+.line{font-family:'Cinzel Decorative',serif;font-weight:700;letter-spacing:1px;
+color:#fff;font-size:clamp(1.4rem,4.6vw,2.7rem);line-height:1.25;max-width:16ch;
+background:linear-gradient(180deg,#ffffff,var(--ice) 60%,#bfe6ff);
+-webkit-background-clip:text;background-clip:text;color:transparent;
+text-shadow:0 2px 30px rgba(0,0,0,.4);filter:drop-shadow(0 0 18px rgba(168,224,255,.35));}
+.opening{font-size:clamp(1.8rem,6.5vw,3.6rem);font-weight:900;letter-spacing:2px;max-width:25ch;}
+.small{font-family:'Quicksand';font-weight:500;color:#dbefff;font-size:1.15rem;opacity:.92;}
+/* photo frame in ice */
+.frame{width:min(64vw,400px);aspect-ratio:3/4;border-radius:18px;background-size:cover;background-position:center;
+background-color:#0e2547;position:relative;
+box-shadow:0 0 0 3px rgba(255,255,255,.9),0 0 0 9px rgba(126,200,227,.35),0 0 60px rgba(168,224,255,.55),0 24px 60px rgba(0,0,0,.6);}
+.frame.wide{aspect-ratio:4/3;width:min(74vw,520px);}
+.frame .glint{position:absolute;inset:0;border-radius:18px;overflow:hidden;}
+.frame .glint::before{content:"";position:absolute;inset:-30%;
+background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.4) 50%,transparent 58%);
+background-size:250% 250%;animation:glint 4s ease-in-out infinite;}
+@keyframes glint{0%{transform:translate(40%,40%);}100%{transform:translate(-40%,-40%);}}
+.frame .ice{position:absolute;inset:0;border-radius:18px;pointer-events:none;
+background:radial-gradient(120% 120% at 0 0,rgba(205,238,255,.35),transparent 35%),
+radial-gradient(120% 120% at 100% 100%,rgba(205,238,255,.3),transparent 35%);
+mix-blend-mode:screen;}
+/* finale */
+#finaleTitle{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:clamp(2.3rem,9.5vw,5.8rem);line-height:1.02;letter-spacing:2px;
+background:linear-gradient(180deg,#ffffff,var(--ice) 50%,var(--ice-deep));
+-webkit-background-clip:text;background-clip:text;color:transparent;
+filter:drop-shadow(0 0 34px rgba(168,224,255,.6));}
+/* ice cake */
+.icecake{width:min(46vw,230px);margin-bottom:6px;filter:drop-shadow(0 12px 24px rgba(0,0,0,.45)) drop-shadow(0 0 26px rgba(168,224,255,.5));animation:floaty 3.6s ease-in-out infinite;}
+@keyframes floaty{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
+.icecake .flame{transform-origin:center bottom;animation:flick .32s ease-in-out infinite alternate;transition:opacity .5s,transform .5s;}
+.icecake .smoke{opacity:0;transition:opacity .6s;}
+.icecake.out .flame{opacity:0;transform:scaleY(.15);}
+.icecake.out .glowfl{opacity:0;}
+.icecake.out .smoke{opacity:.9;}
+@keyframes flick{from{transform:scaleY(1) scaleX(1);}to{transform:scaleY(1.2) scaleX(.88) translateY(-1px);}}
+#fx{position:absolute;inset:0;z-index:20;pointer-events:none;}
+#hud{position:absolute;left:0;right:0;bottom:0;z-index:25;padding:14px 18px;display:none;align-items:center;gap:12px;}
+#bar{flex:1;height:5px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden;}
+#fill{height:100%;width:0;background:linear-gradient(90deg,var(--ice-deep),#fff);transition:width 0.1s linear;}
+.ctl{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#eaf7ff;border-radius:99px;padding:8px 14px;cursor:pointer;font-size:.9rem;backdrop-filter:blur(6px);transition:background 0.2s;}
+.ctl:hover{background:rgba(255,255,255,.22);}
+#replay{position:absolute;z-index:26;left:50%;bottom:13%;transform:translateX(-50%);display:none;font-family:'Quicksand';}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="aurora"></div>
+<div class="stars" id="stars"></div>
+<div class="frostc tl"></div><div class="frostc tr"></div><div class="frostc bl"></div><div class="frostc br"></div>
+<canvas id="snow"></canvas>
+<!-- INTRO -->
+<div id="intro">
+<div class="flake-big">&#10052;</div>
+<h1>Happy Birthday<br>Amy</h1>
+<p class="sub">A little winter fairy tale, made just for you.</p>
+<button class="btn" id="play">&#9654; Begin</button>
+</div>
+<!-- MOVIE -->
+<div id="movie">
+<div class="scene" data-dur="4200">
+<div class="line opening">Once upon a time in a small village in the land of pandas.</div>
+</div>
+<div class="scene" data-dur="4200">
+<div class="line opening">&hellip;there lived a girl named <span style="white-space:nowrap">Amy </span></div>
+</div>
+<div class="scene" data-dur="5200" data-photo="P0">
+<div class="frame"><div class="ice"></div><div class="glint"></div></div>
+<div class="line">Born with a desire to travel the world</div>
+</div>
+<div class="scene" data-dur="5200" data-photo="P1">
+<div class="frame"><div class="ice"></div><div class="glint"></div></div>
+<div class="line">Where every little moment felt like magic</div>
+</div>
+<div class="scene" data-dur="5200" data-photo="P2">
+<div class="frame"><div class="ice"></div><div class="glint"></div></div>
+<div class="line">Half explorer, half mermaid at heart</div>
+</div>
+<div class="scene" data-dur="5600" data-photo="P3" data-wide="1">
+<div class="frame wide"><div class="ice"></div><div class="glint"></div></div>
+<div class="line">Beneath a sky full of wishes</div>
+</div>
+<div class="scene" data-dur="8000" data-finale="1">
+<div class="icecake" id="icecake">
+<svg viewBox="0 0 200 210" width="100%">
+<defs>
+<linearGradient id="iceG" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#ffffff"/><stop offset="55%" stop-color="#dff3ff"/><stop offset="100%" stop-color="#9fd6ef"/>
+</linearGradient>
+<linearGradient id="iceG2" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#eaf9ff"/><stop offset="100%" stop-color="#7ec8e3"/>
+</linearGradient>
+<radialGradient id="flG" cx="50%" cy="35%" r="65%">
+<stop offset="0" stop-color="#fff6d8"/><stop offset="55%" stop-color="#ffd27a"/><stop offset="100%" stop-color="#ff9b3d"/>
+</radialGradient>
+</defs>
+<g>
+<rect x="62" y="58" width="7" height="30" rx="3" fill="#cfeeff" stroke="#8fcfe6" stroke-width="1.5"/>
+<rect x="96" y="50" width="7" height="38" rx="3" fill="#eaf9ff" stroke="#8fcfe6" stroke-width="1.5"/>
+<rect x="130" y="58" width="7" height="30" rx="3" fill="#cfeeff" stroke="#8fcfe6" stroke-width="1.5"/>
+<ellipse class="glowfl" cx="65.5" cy="48" rx="11" ry="14" fill="#ffd27a" opacity=".35"/>
+<ellipse class="glowfl" cx="99.5" cy="40" rx="12" ry="15" fill="#ffd27a" opacity=".35"/>
+<ellipse class="glowfl" cx="133.5" cy="48" rx="11" ry="14" fill="#ffd27a" opacity=".35"/>
+<ellipse class="flame" cx="65.5" cy="49" rx="4.5" ry="9" fill="url(#flG)"/>
+<ellipse class="flame" cx="99.5" cy="41" rx="5" ry="10" fill="url(#flG)"/>
+<ellipse class="flame" cx="133.5" cy="49" rx="4.5" ry="9" fill="url(#flG)"/>
+</g>
+<rect x="56" y="92" width="88" height="40" rx="12" fill="url(#iceG)" stroke="#bfe6ff" stroke-width="2"/>
+<path d="M56 100 q11 13 22 0 q11 13 22 0 q11 13 22 0 q11 13 22 0" fill="#ffffff" stroke="#cdeeff" stroke-width="2" stroke-linejoin="round"/>
+<rect x="40" y="132" width="120" height="52" rx="14" fill="url(#iceG2)" stroke="#bfe6ff" stroke-width="2"/>
+<path d="M40 140 q12 14 24 0 q12 14 24 0 q12 14 24 0 q12 14 24 0 q12 14 24 0" fill="#ffffff" stroke="#cdeeff" stroke-width="2" stroke-linejoin="round"/>
+<text x="70" y="168" font-size="14" text-anchor="middle" fill="#7ec8e3">&#10052;</text>
+<text x="100" y="172" font-size="14" text-anchor="middle" fill="#7ec8e3">&#10052;</text>
+<text x="130" y="168" font-size="14" text-anchor="middle" fill="#7ec8e3">&#10052;</text>
+<text x="100" y="124" font-size="12" text-anchor="middle" fill="#9fd6ef">&#10052;</text>
+<ellipse cx="100" cy="188" rx="84" ry="11" fill="#dff3ff" stroke="#bfe6ff" stroke-width="2"/>
+</svg>
+</div>
+<div id="finaleTitle">Happy Birthday,<br>Amy</div>
+<div class="small" style="font-size:1.3rem;margin-top:4px;">May all your dreams come true </div>
+</div>
+</div>
+<button class="btn ctl" id="replay">&#8634; Watch again</button>
+<canvas id="fx"></canvas>
+<div id="hud">
+<div id="bar"><div id="fill"></div></div>
+<button class="ctl" id="music">&#128266; Music</button>
+<button class="ctl" id="skip">&#9197; Skip</button>
+</div>
+</div>
+<script>
+// --- LOGICA AUDIO (Stile Esploratore / Cartoon) ---
+let actx, musicOn = true, mt;
+const scale = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50]; // Scala Pentatonica Maggiore solare
+function note(freq, t, dur = .7, vol = .09, type = 'sine') {
+if (!actx) return;
+const o = actx.createOscillator(), g = actx.createGain();
+o.type = type;
+o.frequency.value = freq;
+g.gain.setValueAtTime(0, t);
+g.gain.linearRampToValueAtTime(vol, t + .05);
+g.gain.exponentialRampToValueAtTime(.0008, t + dur);
+o.connect(g).connect(actx.destination);
+o.start(t);
+o.stop(t + dur);
+}
+function startMusic() {
+// Crea o sblocca il contesto audio al momento del click dell'utente
+if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+if (actx.state === 'suspended') actx.resume();
+const beat = 0.4;
+let step = 0;
+clearInterval(mt);
+const melodyPattern = [0, 1, 2, 4, 3, 2, 1, 5, 4, 3, 2, 0, 1, 3, 2, 5];
+mt = setInterval(() => {
+if (!musicOn) return;
+const t = actx.currentTime;
+// 1. Melodia Principale flautata
+const currentNoteIndex = melodyPattern[step % melodyPattern.length];
+note(scale[currentNoteIndex], t, 0.6, 0.05, 'triangle');
+// 2. Il Basso ritmico da marcia dell'esploratore
+if (step % 2 === 0) {
+const bassFreq = (step % 4 === 0) ? scale[0] / 2 : scale[3] / 2;
+note(bassFreq, t, 0.5, 0.07, 'sine');
+}
+// 3. Abbellimento acuto
+if (step % 4 === 3) {
+note(scale[5], t + beat / 2, 0.3, 0.02, 'sine');
+}
+step++;
+}, beat * 1000);
+}
+// Gestione pulsante Mute/Unmute
+document.getElementById('music').addEventListener('click', e => {
+musicOn = !musicOn;
+e.target.innerHTML = musicOn ? '&#128266; Music' : '&#128263; Muted';
+if(musicOn && actx && actx.state === 'suspended') actx.resume();
+});
+// --- ENGINE DEL VIDEO / CAROSELLO DI SCENE ---
+const scenes = document.querySelectorAll('.scene');
+let currentSceneIndex = 0;
+let sceneTimeout;
+let progressInterval;
+let totalTimelineDuration = 0;
+let currentTimelineProgress = 0;
+// Calcola la durata totale del video sommando i data-dur delle scene
+scenes.forEach(s => totalTimelineDuration += parseInt(s.dataset.dur || 5000));
+function playVideo() {
+document.getElementById('intro').style.opacity = '0';
+document.getElementById('intro').style.pointerEvents = 'none';
+const movie = document.getElementById('movie');
+movie.style.opacity = '1';
+movie.style.pointerEvents = 'auto';
+document.getElementById('hud').style.display = 'flex';
+document.getElementById('replay').style.display = 'none';
+// Avvia la musica dell'esploratore
+startMusic();
+currentSceneIndex = 0;
+currentTimelineProgress = 0;
+showScene(currentSceneIndex);
+startProgressBar();
+}
+function showScene(index) {
+scenes.forEach((s, i) => {
+if(i === index) {
+s.classList.add('active');
+} else {
+s.classList.remove('active');
+}
+});
+const duration = parseInt(scenes[index].dataset.dur || 5000);
+clearTimeout(sceneTimeout);
+sceneTimeout = setTimeout(() => {
+nextScene();
+}, duration);
+}
+function nextScene() {
+if (currentSceneIndex < scenes.length - 1) {
+currentSceneIndex++;
+showScene(currentSceneIndex);
+} else {
+endVideo();
+}
+}
+function endVideo() {
+clearTimeout(sceneTimeout);
+clearInterval(progressInterval);
+document.getElementById('fill').style.width = '100%';
+document.getElementById('replay').style.width = 'auto';
+document.getElementById('replay').style.display = 'block';
+}
+function startProgressBar() {
+clearInterval(progressInterval);
+const intervalTime = 100;
+progressInterval = setInterval(() => {
+if (currentTimelineProgress < totalTimelineDuration) {
+currentTimelineProgress += intervalTime;
+const percentage = (currentTimelineProgress / totalTimelineDuration) * 100;
+document.getElementById('fill').style.width = `${Math.min(percentage, 100)}%`;
+} else {
+clearInterval(progressInterval);
+}
+}, intervalTime);
+}
+// Bottoni di controllo del video
+document.getElementById('play').addEventListener('click', playVideo);
+document.getElementById('skip').addEventListener('click', nextScene);
+document.getElementById('replay').addEventListener('click', playVideo);
+// --- EFFETTI VISIVI DI SFONDO (Stelle e Neve) ---
+function createStars() {
+const container = document.getElementById('stars');
+for (let i = 0; i < 60; i++) {
+const star = document.createElement('div');
+star.className = 'star';
+star.style.width = star.style.height = `${Math.random() * 3 + 1}px`;
+star.style.top = `${Math.random() * 100}%`;
+star.style.left = `${Math.random() * 100}%`;
+star.style.animationDelay = `${Math.random() * 3}s`;
+container.appendChild(star);
+}
+}
+const canvas = document.getElementById('snow');
+const ctx = canvas.getContext('2d');
+let flakes = [];
+function resizeCanvas() {
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+}
+function initSnow() {
+flakes = [];
+for(let i=0; i<80; i++) {
+flakes.push({
+x: Math.random() * canvas.width,
+y: Math.random() * canvas.height,
+r: Math.random() * 3 + 1,
+d: Math.random() * 50 + 10
+});
+}
+}
+function drawSnow() {
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+ctx.beginPath();
+for(let i=0; i<flakes.length; i++) {
+const f = flakes[i];
+ctx.moveTo(f.x, f.y);
+ctx.arc(f.x, f.y, f.r, 0, Math.PI*2, true);
+// Aggiorna posizione della neve
+f.y += Math.cos(f.d) + 1 + f.r/2;
+f.x += Math.sin(f.d) * 0.5;
+if(f.y > canvas.height) {
+flakes[i] = { x: Math.random()*canvas.width, y: 0, r: f.r, d: f.d };
+}
+}
+ctx.fill();
+requestAnimationFrame(drawSnow);
+}
+window.addEventListener('resize', () => { resizeCanvas(); initSnow(); });
+createStars();
+resizeCanvas();
+initSnow();
+drawSnow();
+</script>
+</body>
+</html>
   .stars{position:absolute;inset:0;z-index:0;}
   .star{position:absolute;background:#fff;border-radius:50%;animation:tw 3.5s ease-in-out infinite;}
   @keyframes tw{0%,100%{opacity:.15;transform:scale(.7);}50%{opacity:1;transform:scale(1.25);}}
