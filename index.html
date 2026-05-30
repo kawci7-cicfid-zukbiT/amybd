@@ -252,16 +252,61 @@ function fxLoop(){ctx.clearRect(0,0,fx.width,fx.height);
   parts=parts.filter(p=>p.life>0&&p.y<innerHeight+40);requestAnimationFrame(fxLoop);}fxLoop();
 
 // music: gentle icy arpeggio (original)
-let actx,musicOn=true,mt;
-const scale=[659.25,783.99,987.77,1174.66,1318.51,1567.98]; // E5 G5 B5 D6 E6 G6 - airy
-function note(freq,t,dur=.7,vol=.09){const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=freq;
-  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.05);g.gain.exponentialRampToValueAtTime(.0008,t+dur);
-  o.connect(g).connect(actx.destination);o.start(t);o.stop(t+dur);}
-function startMusic(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();const beat=.5;let step=0;clearInterval(mt);
-  mt=setInterval(()=>{if(!musicOn)return;const t=actx.currentTime;note(scale[Math.floor(Math.random()*scale.length)],t,.9,.075);
-    if(step%4===0)note(scale[0]/2,t,1.4,.05);if(step%2===1)note(scale[Math.floor(Math.random()*3)+2],t+beat/2,.6,.04);step++;},beat*1000);}
-document.getElementById('music').addEventListener('click',e=>{musicOn=!musicOn;e.target.innerHTML=musicOn?'&#128266; Music':'&#128263; Muted';});
+let actx, musicOn = true, mt;
 
+// Scala Pentatonica Maggiore di Do (C5, D5, E5, G5, A5, C6) + Do4 per il basso
+// È la classica scala usata nei cartoni animati per trasmettere allegria, avventura e meraviglia
+const scale = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50]; 
+
+function note(freq, t, dur = .7, vol = .09, type = 'sine') {
+  const o = actx.createOscillator(), g = actx.createGain();
+  o.type = type; // Possiamo usare 'triangle' per un suono più corposo stile flauto
+  o.frequency.value = freq;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(vol, t + .05);
+  g.gain.exponentialRampToValueAtTime(.0008, t + dur);
+  o.connect(g).connect(actx.destination);
+  o.start(t);
+  o.stop(t + dur);
+}
+
+function startMusic() {
+  if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+  const beat = 0.4; // Ritmo leggermente più incalzante da camminata/esplorazione
+  let step = 0;
+  clearInterval(mt);
+
+  // Una melodia pre-definita semplice e allegra anziché totalmente casuale
+  const melodyPattern = [0, 1, 2, 4, 3, 2, 1, 5, 4, 3, 2, 0, 1, 3, 2, 5];
+
+  mt = setInterval(() => {
+    if (!musicOn) return;
+    const t = actx.currentTime;
+
+    // 1. Melodia Principale (Flautata, stile avventura nei boschi)
+    const currentNoteIndex = melodyPattern[step % melodyPattern.length];
+    note(scale[currentNoteIndex], t, 0.6, 0.06, 'triangle');
+
+    // 2. Il Basso (Crea il ritmo della marcia dell'esploratore)
+    // Suona sul primo e sul terzo battito (battito forte)
+    if (step % 2 === 0) {
+      const bassFreq = (step % 4 === 0) ? scale[0] / 2 : scale[3] / 2; // Alterna Do e Sol bassi
+      note(bassFreq, t, 0.5, 0.08, 'sine');
+    }
+
+    // 3. Controtempo leggero (Abbellimento magico)
+    if (step % 4 === 3) {
+      note(scale[5], t + beat / 2, 0.3, 0.03, 'sine'); // Un piccolo tocco acuto alla fine della quartina
+    }
+
+    step++;
+  }, beat * 1000);
+}
+
+document.getElementById('music').addEventListener('click', e => {
+  musicOn = !musicOn;
+  e.target.innerHTML = musicOn ? '&#128266; Music' : '&#128263; Muted';
+});
 // playback
 const scenes=[...document.querySelectorAll('.scene')];
 const fill=document.getElementById('fill');
