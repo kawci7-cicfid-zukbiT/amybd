@@ -1030,24 +1030,54 @@ document.getElementById('music').addEventListener('click', e => {
 const scenes=[...document.querySelectorAll('.scene')];
 const fill=document.getElementById('fill');
 let idx=-1,sceneTO,progRAF;
+// Sostituisci la funzione showScene con questa versione corretta:
 function showScene(i){
   scenes.forEach(s=>s.classList.remove('active'));
   if(i>=scenes.length){endShow();return;}
   idx=i;const sc=scenes[i];
   const ph=sc.dataset.photo;
-  if(ph&&PHOTOS[ph]){const fr=sc.querySelector('.frame');fr.style.backgroundImage=`url(${PHOTOS[ph]})`;}
+  if(ph&&PHOTOS[ph]){
+    const fr=sc.querySelector('.frame');
+    if(fr) fr.style.backgroundImage=`url(${PHOTOS[ph]})`;
+  }
   sc.classList.add('active');
   const dur=+sc.dataset.dur||4500;
-  if(ph)setTimeout(()=>sparkleRing(innerWidth/2,innerHeight*.4),500);
+  
+  // Effetto scintille per le foto
+  if(ph) setTimeout(()=>sparkleRing(innerWidth/2,innerHeight*.4),500);
+  
+  // Gestione finale con candeline
   if(sc.dataset.finale){
     const cake=document.getElementById('icecake');
-    if(cake){cake.classList.remove('out');
-      setTimeout(()=>{cake.classList.add('out');
-        sparkleRing(innerWidth*.5,innerHeight*.32);snowBurst(70);},3000);}
-    snowBurst(190);let n=0;const fwi=setInterval(()=>{sparkleRing(innerWidth*(.2+Math.random()*.6),innerHeight*(.2+Math.random()*.4));n++;if(n>10)clearInterval(fwi);},600);}
-  const start=performance.now();cancelAnimationFrame(progRAF);
-  (function tick(now){const p=Math.min((now-start)/dur,1);fill.style.width=((i+p)/scenes.length*100)+'%';if(p<1)progRAF=requestAnimationFrame(tick);})(start);
-  clearTimeout(sceneTO);sceneTO=setTimeout(()=>showScene(i+1),dur);
+    if(cake){
+      cake.classList.remove('out');
+      // Spegni le candeline dopo 3 secondi
+      setTimeout(()=>{
+        cake.classList.add('out');
+        sparkleRing(innerWidth*.5,innerHeight*.32);
+        snowBurst(70);
+      },3000);
+    }
+    snowBurst(190);
+    let n=0;
+    const fwi=setInterval(()=>{
+      sparkleRing(innerWidth*(.2+Math.random()*.6),innerHeight*(.2+Math.random()*.4));
+      n++;
+      if(n>10) clearInterval(fwi);
+    },600);
+  }
+  
+  // Aggiorna barra progresso
+  const start=performance.now();
+  cancelAnimationFrame(progRAF);
+  (function tick(now){
+    const p=Math.min((now-start)/dur,1);
+    fill.style.width=((i+p)/scenes.length*100)+'%';
+    if(p<1) progRAF=requestAnimationFrame(tick);
+  })(start);
+  
+  clearTimeout(sceneTO);
+  sceneTO=setTimeout(()=>showScene(i+1),dur);
 }
 function startShow(){const intro=document.getElementById('intro');intro.style.opacity='0';setTimeout(()=>intro.style.display='none',800);
   const movie=document.getElementById('movie');movie.style.transition='opacity .9s';movie.style.opacity='1';movie.style.pointerEvents='auto';
